@@ -44,24 +44,28 @@ public:
     }
 };
 
-int kruskalMST(int V, vector<Edge>& edges) {
+void kruskalMST(int V, vector<Edge>& edges) {
     sort(edges.begin(), edges.end());
 
     DisjointSet ds(V);
+    vector<Edge> result;
     int totalWeight = 0;
-    int edgesCount = 0;
 
     for (const auto& edge : edges) {
         if (ds.find(edge.src) != ds.find(edge.dest)) {
             ds.unite(edge.src, edge.dest);
+            result.push_back(edge);
             totalWeight += edge.weight;
-            edgesCount++;
 
-            if (edgesCount == V - 1) break;
+            if (result.size() == V - 1) break;
         }
     }
 
-    return totalWeight;
+    cout << "Edge \tWeight" << endl;
+    for (const auto& edge : result) {
+        cout << edge.src << " - " << edge.dest << " \t" << edge.weight << endl;
+    }
+    cout << "Total MST Weight: " << totalWeight << endl;
 }
 
 int main() {
@@ -75,8 +79,7 @@ int main() {
         {2, 4, 7}
     };
 
-    int minWeight = kruskalMST(V, edges);
-    cout << "Weight of Minimum Spanning Tree: " << minWeight << endl;
+    kruskalMST(V, edges);
 
     return 0;
 }
