@@ -6,33 +6,47 @@ using namespace std;
 
 typedef pair<int, int> pii;
 
-int primMST(int V, const vector<vector<pii>>& adj) {
+struct Edge {
+    int u, v, w;
+};
+
+void primMST(int V, const vector<vector<pii>>& adj) {
     priority_queue<pii, vector<pii>, greater<pii>> pq;
+    vector<int> key(V, 1e9);
+    vector<int> parent(V, -1);
     vector<bool> inMST(V, false);
-    
+
     pq.push({0, 0});
-    int totalWeight = 0;
+    key[0] = 0;
 
     while (!pq.empty()) {
-        auto [weight, u] = pq.top();
+        pii current = pq.top();
+        int u = current.second;
         pq.pop();
 
         if (inMST[u]) continue;
 
         inMST[u] = true;
-        totalWeight += weight;
 
         for (auto& edge : adj[u]) {
             int v = edge.first;
-            int w = edge.second;
+            int weight = edge.second;
 
-            if (!inMST[v]) {
-                pq.push({w, v});
+            if (!inMST[v] && key[v] > weight) {
+                key[v] = weight;
+                pq.push({key[v], v});
+                parent[v] = u;
             }
         }
     }
 
-    return totalWeight;
+    int totalWeight = 0;
+    cout << "Edge \tWeight" << endl;
+    for (int i = 1; i < V; i++) {
+        cout << parent[i] << " - " << i << " \t" << key[i] << endl;
+        totalWeight += key[i];
+    }
+    cout << "Total MST Weight: " << totalWeight << endl;
 }
 
 int main() {
@@ -57,8 +71,7 @@ int main() {
     adj[2].push_back({4, 7});
     adj[4].push_back({2, 7});
 
-    int minWeight = primMST(V, adj);
-    cout << "Weight of Minimum Spanning Tree: " << minWeight << endl;
+    primMST(V, adj);
 
     return 0;
 }
